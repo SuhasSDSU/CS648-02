@@ -1,141 +1,183 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint "react/react-in-jsx-scope": "off" */
 /* globals React ReactDOM */
 /* eslint "react/jsx-no-undef": "off" */
+/* eslint "no-alert": "off" */
 
-/* eslint-disable react/prefer-stateless-function */
-class ProductFilter extends React.Component {
-  render() {
-    return (
-      <div>This is a placeholder for the product filter.</div>
-    );
-  }
-}
+const productTableHeadings = ['Product Name', 'Price', 'Category', 'Image'];
+const NO_DATA_AVAILABLE = 'No Data Available';
 
-function ProductRow(props) {
-  const { product } = props;
+/**
+ * Renders a single Row in the Product table
+ * @param props Expects props as a 'product' object which contains
+ * name, price, category and imageUrl.
+ */
+function ProductTableRow({ product }) {
+  const {
+    name, price, category, imageUrl,
+  } = product;
   return (
     <tr>
-      <td>{product.id}</td>
-      <td>{product.productName}</td>
-      <td>
-        $
-        {product.pricePerUnit}
-      </td>
-      <td>{product.category}</td>
-      <td><a href={product.imageUrl} target="_blank">View</a></td>
+      <td>{name || NO_DATA_AVAILABLE}</td>
+      <td>{price ? `$${price}` : NO_DATA_AVAILABLE}</td>
+      <td>{category}</td>
+      <td>{imageUrl ? <a href={imageUrl} target="_blank" rel="noreferrer">View</a> : NO_DATA_AVAILABLE}</td>
     </tr>
   );
 }
 
+/**
+ * Renders the Product Table
+ * @param props Expects 'headings' and 'products' array as props
+ */
 function ProductTable(props) {
-  const productRows = props.products.map(product => <ProductRow key={product.id} product={product} />);
+  const { headings, products, loading } = props;
+  const productTableRows = products.map(
+    product => <ProductTableRow key={product.id} product={product} />,
+  );
+  const initialTableMessage = loading ? 'Loading products...' : 'No Products added yet';
 
   return (
-    <table className="bordered-table">
-      <thead>
+    <table className="table">
+      <thead className="text-left">
         <tr>
-          <th>ID</th>
-          <th>Product Name</th>
-          <th>Price</th>
-          <th>Category</th>
-          <th>Image</th>
+          {headings.map((heading, index) =>
+            // using index as keys as Table Headings will not change dynamically
+            // eslint-disable-next-line implicit-arrow-linebreak, react/no-array-index-key
+            <th key={index}>{heading}</th>)}
         </tr>
       </thead>
+
       <tbody>
-        {productRows}
+        {products.length > 0 ? productTableRows : (
+          <tr className="text-center"><td colSpan="4">{initialTableMessage}</td></tr>
+        )}
       </tbody>
     </table>
   );
 }
 
+/**
+ * Product Add Form.
+ * Expects 'addProduct' function as a prop.
+ * Uses a controlled state for 'Price' input element for adding '$'.
+ * And for rest of the elements, it uses native 'forms' object from DOM.
+ */
 class ProductAdd extends React.Component {
   constructor() {
     super();
+    this.state = {
+      price: '$',
+    };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePriceChange = this.handlePriceChange.bind(this);
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-    const form = document.forms.productAdd;
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const {
+      name, price, category, imageUrl,
+    } = document.forms.productAdd;
+    const priceWithoutDollar = price.value.substring(1); // Getting value without '$'
 
     const product = {
-      productName: form.productName.value, pricePerUnit: form.pricePerUnit.value.substr(1), category: form.category.value, imageUrl: form.imageUrl.value,
+      name: name.value,
+      price: parseFloat(priceWithoutDollar),
+      category: category.value,
+      imageUrl: imageUrl.value,
     };
+    this.props.addProduct(product);
 
-    this.props.createProduct(product);
-    form.productName.value = '';
-    form.pricePerUnit.value = '$';
-    form.category.value = 'Shirts';
-    form.imageUrl.value = '';
+    // Resetting the Form to initial value
+    name.value = '';
+    category.value = 'Shirts';
+    imageUrl.value = '';
+    this.setState({ price: '$' });
   }
 
+  handlePriceChange(event) {
+    const priceWithoutDollar = event.target.value.substring(1); // Getting value without '$'
+    this.setState({ price: `$${priceWithoutDollar}` });
+  }
 
   render() {
     return (
-      <form name="productAdd" onSubmit={this.handleSubmit}>
-        <table className="unbordered-table">
-          <tbody>
-            <tr>
-              <td>
-                <div>
-                  Category
-                  <br />
-                  <select id="categoryMenu" name="category">
-                    <option value="Shirts">Shirts</option>
-                    <option value="Jeans">Jeans</option>
-                    <option value="Jackets">Jackets</option>
-                    <option value="Sweaters">Sweaters</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
-                </div>
-              </td>
+      <form name="productAdd" onSubmit={this.handleSubmit} className="custom-form">
+        <div className="form-element">
+          <label htmlFor="category" className="label">
+            Category
+            <select name="category" className="form-element-select">
+              <option value="Shirts">Shirts</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Jackets">Jackets</option>
+              <option value="Sweaters">Sweaters</option>
+              <option value="Accessories">Accessories</option>
+            </select>
+          </label>
 
-              <td>
-                <div>
-                  Price Per Unit
-                  <br />
-                  <input type="text" name="pricePerUnit" defaultValue="$" />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-          <tbody>
-            <tr>
-              <td>
-                <div>
-                  Product Name
-                  <br />
-                  <input type="text" name="productName" />
-                </div>
-              </td>
-              <td>
-                <div>
-                  Image URL
-                  <br />
-                  <input type="text" name="imageUrl" />
-                </div>
-              </td>
-            </tr>
-          </tbody>
+        </div>
 
-          <tbody>
-            <tr>
-              <td>
-                <button>Add Product</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="form-element">
+          <label htmlFor="price" className="label">
+            Price Per Unit
+            <input type="text" name="price" value={this.state.price} onChange={this.handlePriceChange} className="form-element-input" />
+          </label>
+        </div>
+
+        <div className="form-element">
+          <label htmlFor="name" className="label">
+            Product Name
+            <input type="text" name="name" required className="form-element-input" />
+          </label>
+        </div>
+
+        <div className="form-element">
+          <label htmlFor="imageUrl" className="label">
+            Image URL
+            <input type="text" name="imageUrl" className="form-element-input" />
+          </label>
+        </div>
+
+        <button type="submit" className="button button-dark">Add Product</button>
       </form>
     );
   }
 }
 
+/**
+ * Generic function to fetch graphQL queries and mutations
+ * @param query GraphQL query to be sent in the body
+ * @param variables Query variable to be passed with the query. Defaults to {}
+ */
+async function graphQLFetch(query, variables = {}) {
+  try {
+    const response = await fetch(window.ENV.UI_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables }),
+    });
+    const result = await response.json();
+
+    if (result.errors) {
+      const error = result.errors[0];
+      alert('Error while quering for data - ', error);
+    }
+    return result.data;
+  } catch (e) {
+    alert(`Error in sending data to server: ${e.message}`);
+    return null;
+  }
+}
+
+/**
+ * Entry Point of our Application. Renders the whole page from here.
+ */
 class ProductList extends React.Component {
   constructor() {
     super();
-    this.state = { products: [] };
-    this.createProduct = this.createProduct.bind(this);
+    this.state = { products: [], initialLoading: true };
+    this.addProduct = this.addProduct.bind(this);
   }
 
   componentDidMount() {
@@ -143,59 +185,61 @@ class ProductList extends React.Component {
   }
 
   async loadData() {
-    const query = `query {
-            productList {
-              id
-              productName
-              pricePerUnit
-              category
-              imageUrl
+    const query = `
+            query {
+                productList {
+                    id
+                    name
+                    category
+                    price
+                    imageUrl
+                }
             }
-          }`;
+        `;
 
-    const response = await fetch(window.ENV.UI_API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    });
+    const data = await graphQLFetch(query);
 
-    const body = await response.text();
-    const result = JSON.parse(body);
-    this.setState({ products: result.data.productList });
+    if (data) {
+      this.setState({ products: data.productList, initialLoading: false });
+    }
   }
 
-  async createProduct(product) {
-    const query = `mutation addProduct($product: ProductInputs!) {
-            addProduct(product: $product) {
-                id
+  async addProduct(product) {
+    const query = `
+            mutation addProduct($product: ProductInputs!) {
+                addProduct(product: $product) {
+                    id
+                }
             }
-          }`;
+        `;
 
-    const response = await fetch(window.ENV.UI_API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, variables: { product } }),
-    });
-
-    this.loadData();
+    const data = await graphQLFetch(query, { product });
+    if (data) {
+      this.loadData();
+    }
   }
 
   render() {
     return (
       <React.Fragment>
-        <h1>My Company Inventory</h1>
-        <h4>Showing all available products</h4>
-        <hr />
-        <ProductTable products={this.state.products} />
-        <br />
-        <h4>Add a new product to inventory</h4>
-        <hr />
-        <ProductAdd createProduct={this.createProduct} />
+        <div className="container">
+          <h2>My Company Inventory</h2>
+          <div>Showing all available products</div>
+          <hr />
+          <ProductTable
+            headings={productTableHeadings}
+            products={this.state.products}
+            loading={this.state.initialLoading}
+          />
+          <div>Add a new Product</div>
+          <hr />
+          <ProductAdd addProduct={this.addProduct} />
+        </div>
       </React.Fragment>
     );
   }
 }
 
-const element = <ProductList />;
+const element = (<ProductList />);
 
 ReactDOM.render(element, document.getElementById('contents'));

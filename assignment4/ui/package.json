@@ -1,30 +1,39 @@
 {
-  "name": "assignment4_ui",
+  "name": "assignment4-ui",
   "version": "1.0.0",
-  "description": "",
+  "description": "MERN Stack Assignment 4 UI",
   "main": "index.js",
   "scripts": {
-    "compile": "babel src --presets @babel/react --out-dir public",
-    "start": "nodemon -w uiserver.js -w .env uiserver.js",
-    "watch": "babel src --presets @babel/react --out-dir public --watch --verbose",
+    "start": "npm run compile && nodemon -w uiserver.js -w .env uiserver.js",
+    "lint": "eslint . --ext js,jsx --ignore-pattern public",
+    "compile": "babel src --out-dir public",
+    "watch": "npm run compile -- -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jainamshethhere/assignment4.git"
+  },
+  "author": "Jainam Sheth",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jainamshethhere/assignment4/issues"
+  },
+  "homepage": "https://github.com/jainamshethhere/assignment4#readme",
   "dependencies": {
-    "dotenv": "^6.2.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.2"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/preset-react": "^7.9.4",
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-react": "^7.12.13",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.19.0"
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.22.0",
+    "nodemon": "^2.0.7"
   }
 }

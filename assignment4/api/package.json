@@ -1,28 +1,26 @@
 {
-  "name": "assignment4_api",
+  "name": "assignment4-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "MERN Stack Assignment 4 API",
   "main": "index.js",
   "scripts": {
-    "compile": "babel src --presets @babel/react --out-dir public",
-    "start": "nodemon -e js,graphql -w . -w .env server.js",
-    "watch": "babel src --presets @babel/react --out-dir public --watch --verbose",
+    "start": "nodemon -e js, graphql -w . -w .env server.js",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Jainam Sheth",
   "license": "ISC",
   "dependencies": {
-    "apollo-server-express": "^2.3.1",
-    "dotenv": "^6.2.0",
+    "apollo-server-express": "^2.21.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "graphql": "^0.13.2",
-    "mongodb": "^3.5.5",
-    "nodemon": "^2.0.2"
+    "graphql": "^15.5.0",
+    "mongodb": "^3.6.5"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.20.1"
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7"
   }
 }

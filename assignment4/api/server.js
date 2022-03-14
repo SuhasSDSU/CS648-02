@@ -1,37 +1,65 @@
-/* eslint-disable no-unused-vars */
-/* eslint no-restricted-globals: "off" */
-
 const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { MongoClient } = require('mongodb');
 
-const url = process.env.DB_URL || 'mongodb+srv://inventory:BCl9MjrMUea7HKc2@cluster0.e1som.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const url = process.env.DB_URL
+  || 'mongodb+srv://inventory:Sad123@cluster0.e1som.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
 let db;
 
+/**
+ * Increments the current counter of the specific collection by 1.
+ * @param {string} name Name of the collection for which the counter is needed
+ * @returns Next id number in the sequence
+ */
+async function getNextSequence(name) {
+  const result = await db
+    .collection('counters')
+    .findOneAndUpdate(
+      { _id: name },
+      { $inc: { current: 1 } },
+      { returnOriginal: false },
+    );
+  return result.value.current;
+}
+
+/**
+ * Fetches all products from database.
+ * @returns List of products
+ */
 async function productList() {
   const products = await db.collection('products').find({}).toArray();
   return products;
 }
 
-async function getNextSequence(name) {
-  const result = await db.collection('counters').findOneAndUpdate(
-    { _id: name },
-    { $inc: { current: 1 } },
-    { returnOriginal: false },
-  );
-  return result.value.current;
+/**
+ * Adds the new product to the databse. Accepts an object with Product as the second parameter.
+ * @returns Currently added product
+ */
+async function addProduct(_, { product }) {
+  // eslint-disable-next-line no-param-reassign
+  product.id = await getNextSequence('products');
+
+  const result = await db.collection('products').insertOne(product);
+  const currentlyAddedProduct = await db
+    .collection('products')
+    .findOne({ _id: result.insertedId });
+  return currentlyAddedProduct;
 }
 
-async function addProduct(_, { product }) {
-  const errors = [];
-  const newProduct = Object.assign({}, product);
-  newProduct.id = await getNextSequence('products');
-  const result = await db.collection('products').insertOne(newProduct);
-  const savedProduct = await db.collection('products').findOne({ _id: result.insertedId });
-  return savedProduct;
+/**
+ * Connects to the databse and sets the 'db' variable to the mongo client db.
+ */
+async function connectToDb() {
+  const client = new MongoClient(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  await client.connect();
+  console.log('Connected to MongoDB at', url);
+  db = client.db();
 }
 
 const resolvers = {
@@ -43,13 +71,7 @@ const resolvers = {
   },
 };
 
-async function connectToDb() {
-  const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-  await client.connect();
-  console.log('Connected to MongoDB at', url);
-  db = client.db();
-}
-
+/* Initial Server setup */
 const server = new ApolloServer({
   typeDefs: fs.readFileSync('schema.graphql', 'utf-8'),
   resolvers,
@@ -65,10 +87,10 @@ const port = process.env.API_SERVER_PORT || 3000;
 (async function () {
   try {
     await connectToDb();
-    app.listen(port, () => {
-      console.log(`API started on port ${port}`);
+    app.listen(3000, () => {
+      console.log(`API server started at port ${port}`);
     });
-  } catch (err) {
-    console.log('ERROR:', err);
+  } catch (error) {
+    console.log('Error connecting to DB - ', error);
   }
 }());
