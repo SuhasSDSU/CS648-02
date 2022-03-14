@@ -4,7 +4,6 @@
  * localhost:
  *   mongo productTracker scripts/init.mongo.js
  * Atlas:
- *   mongo "mongodb+srv://cluster.yxyis.mongodb.net/inventoryTracker" --username jainamcsheth scripts/init.mongo.js
  */
 
 /* global db print */

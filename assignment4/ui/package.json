@@ -10,16 +10,8 @@
     "watch": "npm run compile -- -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jainamshethhere/assignment4.git"
-  },
-  "author": "Jainam Sheth",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jainamshethhere/assignment4/issues"
-  },
-  "homepage": "https://github.com/jainamshethhere/assignment4#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1"
