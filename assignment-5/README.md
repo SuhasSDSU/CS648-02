@@ -24,7 +24,7 @@ Go to UI folder and run `npm run watch` to make babel watch for changes in files
 
 ## MongoDB reset
 
-From Api folder, you can run `mongodb+srv://inventory:Sad123@cluster0.e1som.mongodb.net/myFirstDatabase?retryWrites=true&w=majority" --username change scripts/init.mongo.js` and enter password as `change` to reset the database with two products added initially.
+From Api folder, you can run `mongodb+srv://inventory:Sad123@cluster0.e1som.mongodb.net/myFirstDatabase?retryWrites=true&w=majority" --username change scripts/init.mongo.js` and enter password as `Sad123` to reset the database with two products added initially.
 
 ## Lint check
 
