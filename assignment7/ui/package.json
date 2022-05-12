@@ -18,12 +18,8 @@
     "type": "git",
     "url": "git+https://github.com/jainamshethhere/assignment7.git"
   },
-  "author": "Jainam Sheth",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jainamshethhere/assignment7/issues"
-  },
-  "homepage": "https://github.com/jainamshethhere/assignment7#readme",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^3.4.1",
